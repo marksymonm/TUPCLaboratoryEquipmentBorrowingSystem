@@ -14,7 +14,7 @@ User Management Dashboard
 <div class="container mt-5 d-flex justify-content-center">
     <div class="w-100" style="max-width: 600px;">
         <h1 class="text-center mb-4">MANAGE PROGRAMS</h1>
-        
+
         <form id="program-form" method="post" class="mb-4">
             {% csrf_token %}
             <div class="mb-3">
@@ -37,9 +37,9 @@ User Management Dashboard
         <thead>
             <tr>
                 <!-- Control width for Program Name on larger screens and smaller screens -->
-                <th class="col-6 col-sm-4 col-md-6 col-lg-6 col-xl-6">Program Name</th>  
+                <th class="col-6 col-sm-4 col-md-6 col-lg-6 col-xl-6">Program Name</th>
                 <!-- Control width for Action column, responsive on small screens -->
-                <th class="col-6 col-sm-7 col-md-6 col-lg-6 col-xl-6">Action</th> 
+                <th class="col-6 col-sm-7 col-md-6 col-lg-6 col-xl-6">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -50,7 +50,7 @@ User Management Dashboard
                     <div class="btn-group d-flex flex-column flex-sm-row">
                         <button class="btn btn-primary btn-sm mb-2 ms-sm-3 me-sm-2 " onclick="editProgram(this)">Edit</button>
                         <button class="btn btn-danger btn-sm mb-2 ms-sm-2 me-sm-3" onclick="deleteProgram(this)">Delete</button>
-                    
+
                     </div>
                 </td>
             </tr>
@@ -74,11 +74,24 @@ User Management Dashboard
 
 {% block extra_js %}
 <script>
+
     function editProgram(button) {
         const row = button.closest('tr');
         const nameCell = row.cells[0];
-        const newName = prompt('Edit program name:', nameCell.textContent);
+        const currentName = nameCell.textContent;
+        let newName = prompt('Edit program name:', currentName);
+
         if (newName) {
+            // Automatically capitalize all letters in the input
+            newName = newName.toUpperCase();
+
+            // Validate that the input contains only capitalized letters, spaces, and dashes
+            const isValid = /^[A-Z\s\-]+$/.test(newName); // Allows only capitalized letters, spaces, and dashes
+            if (!isValid) {
+                alert('Program name must contain only uppercase letters, spaces, and dashes. Please try again.');
+                return;
+            }
+
             const programId = row.getAttribute('data-id');
             fetch("{% url 'manage_programs' %}", {
                 method: 'POST',
@@ -94,12 +107,19 @@ User Management Dashboard
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    nameCell.textContent = data.program_name;
+                    nameCell.textContent = data.program_name; // Update the displayed name
+                    alert('Program name updated successfully!');
+                } else {
+                    alert('Failed to update program. Please try again.');
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
         }
     }
+
 
     function deleteProgram(button) {
         const row = button.closest('tr');
