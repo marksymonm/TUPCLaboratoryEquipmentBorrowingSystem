@@ -314,7 +314,7 @@ def faculty_homepage(request):
 def cart_student(request):
     if 'user_id' in request.session and request.session.get('user_type') == 'student':
         user_id = request.session['user_id']
-        
+
         try:
             student = StudentAccounts.objects.get(id=user_id)
             cart_items = Cart.objects.filter(name=student.first_name + ' ' + student.surname)
@@ -343,11 +343,7 @@ def cart_student(request):
                     if reservation_date:
                         reservation_date = datetime.strptime(reservation_date, "%Y-%m-%d").date()
 
-                        # Check if the reservation_date is a Friday
-                        if reservation_date.weekday() == 4:  # Friday is 4 in Python's weekday()
-                            date_returned = reservation_date + timedelta(days=3)  # Add 2 days to skip the weekend
-                        else:
-                            date_returned = reservation_date + timedelta(days=1)  # Default: 1 day return time
+                        date_returned = reservation_date + timedelta(days=1)  # Default: 1 day return time
 
                         # Check if there is sufficient stock for each item before proceeding with the borrowing process
                         insufficient_stock = False
@@ -389,15 +385,15 @@ def cart_student(request):
                                             <!-- Header Section -->
                                             <tr>
                                                 <td align="center" style="padding: 0; background: radial-gradient(circle at top, rgb(107, 1, 1), rgba(46, 1, 1, 0.9)); border-radius: 8px 8px 0 0;">
-                                                    <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc" 
-                                                        alt="Header Image" 
+                                                    <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc"
+                                                        alt="Header Image"
                                                         style="width: auto; height: 80px; max-width: 100%; padding: 5px; display: block;">
                                                 </td>
                                             </tr>
                                             <!-- Body Content -->
                                             <tr>
                                                 <td style="padding: 30px; text-align: center; color: #333333;">
-                        
+
                                                     <p style="font-size: 16px; line-height: 1.5; margin: 0 0 15px;">
                                                         Your reservation request has been successfully sent to the laboratory technician and is awaiting confirmation.
                                                     </p>
@@ -440,7 +436,7 @@ def cart_student(request):
                             # Delete the items from the cart
                             cart_items.delete()
                             return redirect('cart_student')
-                
+
                 # Check if the item_id is passed (added part from your code)
                 item_id = request.POST.get('item_id')
                 reservation_date = request.POST.get('reservation_date')
@@ -478,7 +474,7 @@ def cart_student(request):
 def cart_faculty(request):
     if 'user_id' in request.session and request.session.get('user_type') == 'faculty':
         user_id = request.session['user_id']
-        
+
         try:
             faculty = Staff_Faculty_Accounts.objects.get(id=user_id)
             full_name = faculty.first_name + ' ' + faculty.surname + ' - faculty'
@@ -520,11 +516,7 @@ def cart_faculty(request):
                     if reservation_date:
                         reservation_date = datetime.strptime(reservation_date, "%Y-%m-%d").date()
 
-                        # Check if the reservation_date is a Friday
-                        if reservation_date.weekday() == 4:  # Friday is 4 in Python's weekday()
-                            date_returned = reservation_date + timedelta(days=3)  # Add 2 days to skip the weekend
-                        else:
-                            date_returned = reservation_date + timedelta(days=1)  # Default: 1 day return time
+                        date_returned = reservation_date + timedelta(days=1)  # Default: 1 day return time
 
                         # Check if there is sufficient stock for each item before proceeding with the borrowing process
                         insufficient_stock = False
@@ -567,15 +559,15 @@ def cart_faculty(request):
                                             <!-- Header Section -->
                                             <tr>
                                                 <td align="center" style="padding: 0; background: radial-gradient(circle at top, rgb(107, 1, 1), rgba(46, 1, 1, 0.9)); border-radius: 8px 8px 0 0;">
-                                                    <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc" 
-                                                        alt="Header Image" 
+                                                    <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc"
+                                                        alt="Header Image"
                                                         style="width: auto; height: 80px; max-width: 100%; padding: 5px; display: block;">
                                                 </td>
                                             </tr>
                                             <!-- Body Content -->
                                             <tr>
                                                 <td style="padding: 30px; text-align: center; color: #333333;">
-                        
+
                                                     <p style="font-size: 16px; line-height: 1.5; margin: 0 0 15px;">
                                                         Your reservation request has been successfully sent to the laboratory technician and is awaiting confirmation.
                                                     </p>
