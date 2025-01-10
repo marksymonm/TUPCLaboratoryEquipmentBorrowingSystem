@@ -22,11 +22,19 @@
             <div class="row mb-3">
                 <div class="col-md-6 col-12">
                     <label for="first-name" class="form-label"><i class="fas fa-user"></i> FIRST NAME</label>
-                    <input type="text" id="first-name" name="first-name" class="form-control" placeholder="Enter your first name" required value="{{ first_name|default:'' }}" oninput="capitalizeWords(this); restrictNumbers(this)">
+                    <input type="text" id="first-name" name="first-name" class="form-control"
+                           placeholder="Enter your first name" required
+                           value="{{ first_name|default:'' }}"
+                           oninput="capitalizeWords(this); restrictNumbers(this); restrictSpecialCharacters(this)">
+
                 </div>
                 <div class="col-md-6 col-12">
                     <label for="last-name" class="form-label">SURNAME</label>
-                    <input type="text" id="last-name" name="last-name" class="form-control" placeholder="Enter your surname" required value="{{ surname|default:'' }}" oninput="capitalizeWords(this); restrictNumbers(this)">
+                    <input type="text" id="last-name" name="last-name" class="form-control"
+                           placeholder="Enter your surname" required
+                           value="{{ surname|default:'' }}"
+                           oninput="capitalizeWords(this); restrictNumbers(this); restrictSpecialCharacters(this)">
+
                 </div>
             </div>
 
@@ -77,7 +85,7 @@
             <button type="submit" class="btn btn-primary w-100">SUBMIT</button>
             <button type="button" class="btn btn-cancel w-100" onclick="window.location.href='/'">CANCEL</button>
 
-        
+
             {% if messages %}
             {% for message in messages %}
                 {% if "Password must be at least 8 characters" in message %}
@@ -95,7 +103,7 @@
                 {% endif %}
             {% endfor %}
         {% endif %}
-        
+
         </form>
     </div>
 
