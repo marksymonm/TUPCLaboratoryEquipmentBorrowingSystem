@@ -8,23 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const formattedToday = today.toISOString().split('T')[0];
     dateInput.setAttribute('min', formattedToday);
 
-    // Function to check if a date is a weekend
-    const isWeekend = (date) => {
-        const day = date.getDay();
-        return day === 0 || day === 6; // Sunday (0) and Saturday (6)
-    };
-
-    // Add an event listener to validate the date
+    /// Add an event listener to validate the date
     dateInput.addEventListener('change', (e) => {
         const selectedDate = new Date(e.target.value);
         if (selectedDate < today) {
             alert('Past dates and the current date are not allowed. Please select a valid date for your reservation.');
             e.target.value = ''; // Clear the invalid date
-        } else if (isWeekend(selectedDate)) {
-            alert('Weekends are not allowed. Please choose a weekday.');
-            e.target.value = ''; // Clear the invalid date
         }
     });
+
 
     // Prevent manual input of invalid dates
     dateInput.addEventListener('keydown', (e) => {
