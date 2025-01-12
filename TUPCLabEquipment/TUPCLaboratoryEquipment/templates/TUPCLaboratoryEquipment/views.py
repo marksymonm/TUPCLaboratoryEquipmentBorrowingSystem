@@ -3,8 +3,8 @@ import random
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render, redirect
-from TUPCLaboratoryEquipment.models import Borrowing_Records, Program  
-from TUPCLaboratoryEquipment.models import Staff_Faculty_Accounts 
+from TUPCLaboratoryEquipment.models import Borrowing_Records, Program
+from TUPCLaboratoryEquipment.models import Staff_Faculty_Accounts
 from TUPCLaboratoryEquipment.models import StudentAccounts
 from django.http import FileResponse, HttpResponse, JsonResponse
 from django.contrib import messages
@@ -86,7 +86,7 @@ def register_student(request):
         # Send verification email
         try:
             verification_url = request.build_absolute_uri(f"/verify-email/?{urlencode({'token': verification_token})}")
-            
+
             # Create email message with HTML content
             msg = MIMEMultipart()
             msg['From'] = EMAIL_ADDRESS
@@ -291,10 +291,10 @@ def faculty_homepage(request):
     # Check if 'user_id' is in session and retrieve staff details if available
     if 'user_id' in request.session:
         user_id = request.session['user_id']
-        
+
         try:
             staff = Staff_Faculty_Accounts.objects.get(id=user_id)
-            
+
             # Add staff-specific data to the context
             context.update({
                 'first_name': staff.first_name,
@@ -343,7 +343,11 @@ def cart_student(request):
                     if reservation_date:
                         reservation_date = datetime.strptime(reservation_date, "%Y-%m-%d").date()
 
-                        date_returned = reservation_date + timedelta(days=1)  # Default: 1 day return time
+                        # Check if the reservation_date is a Friday
+                        if reservation_date.weekday() == 4:  # Friday is 4 in Python's weekday()
+                            date_returned = reservation_date + timedelta(days=3)  # Add 2 days to skip the weekend
+                        else:
+                            date_returned = reservation_date + timedelta(days=1)  # Default: 1 day return time
 
                         # Check if there is sufficient stock for each item before proceeding with the borrowing process
                         insufficient_stock = False
@@ -516,7 +520,11 @@ def cart_faculty(request):
                     if reservation_date:
                         reservation_date = datetime.strptime(reservation_date, "%Y-%m-%d").date()
 
-                        date_returned = reservation_date + timedelta(days=1)  # Default: 1 day return time
+                        # Check if the reservation_date is a Friday
+                        if reservation_date.weekday() == 4:  # Friday is 4 in Python's weekday()
+                            date_returned = reservation_date + timedelta(days=3)  # Add 2 days to skip the weekend
+                        else:
+                            date_returned = reservation_date + timedelta(days=1)  # Default: 1 day return time
 
                         # Check if there is sufficient stock for each item before proceeding with the borrowing process
                         insufficient_stock = False
@@ -696,7 +704,7 @@ def change_password(request):
         if not re.match(password_regex, new_password):
             messages.warning(request, "Password must be at least 8 characters long and include letters (a-z, A-Z), numbers (0-9), and symbols (!@#$%^&*()-+=).")
             return render(request, 'TUPCLaboratoryEquipment/change-password.html')
-        
+
         # Update the password and save
         user.password = new_password
         if user_type == 'labtech':
@@ -712,7 +720,7 @@ def main_homepage(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        
+
         print("Login attempt with email:", email)
 
         try:
@@ -806,7 +814,7 @@ def main_homepage(request):
 def labtech_homepage(request):
     if 'user_id' not in request.session or request.session.get('user_type') != 'labtech':
         return redirect('main_homepage')  # Redirect to the login page if not logged in as labtech
-    
+
     sort_option = request.GET.get('sort', 'all')  # Default to 'all'
 
     # Filter inventory items based on the selected sort option
@@ -827,7 +835,7 @@ def labtech_homepage(request):
     if request.method == 'POST':
         request_id = request.POST.get('request_id')
         action = request.POST.get('action')
-        
+
         print(f"Action: {action}, Request ID: {request_id}")
 
         # Get the borrowing record and update its status based on the action
@@ -839,7 +847,7 @@ def labtech_homepage(request):
             # Send an email to the user whose request was accepted
             student_email = borrow_record.email  # Fetch the student's email from the Borrowing_Records
             subject = "Borrow Request Approved"
-    
+
             # HTML body for the email
             body = f"""
             <html>
@@ -848,8 +856,8 @@ def labtech_homepage(request):
                         <!-- Header Section with Radial Gradient Background -->
                         <tr>
                             <td align="center" style="padding: 0; background: radial-gradient(circle at top, rgb(107, 1, 1), rgba(46, 1, 1, 0.9)); border-radius: 8px 8px 0 0;">
-                                <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc" 
-                                    alt="Header Image" 
+                                <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc"
+                                    alt="Header Image"
                                     style="width: auto; height: 80px; max-width: 100%; padding: 5px; display: block;">
                             </td>
                         </tr>
@@ -914,8 +922,8 @@ def labtech_homepage(request):
                         <!-- Header Section with Radial Gradient Background -->
                         <tr>
                             <td align="center" style="padding: 0; background: radial-gradient(circle at top, rgb(107, 1, 1), rgba(46, 1, 1, 0.9)); border-radius: 8px 8px 0 0;">
-                                <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc" 
-                                    alt="TUPC Laboratory Equipment Borrowing System" 
+                                <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc"
+                                    alt="TUPC Laboratory Equipment Borrowing System"
                                     style="width: auto; height: 80px; max-width: 100%; padding: 5px; display: block;">
                             </td>
                         </tr>
@@ -1055,7 +1063,7 @@ def add_equipment(request):
 def remove_equipment(request):
     if 'user_id' not in request.session or request.session.get('user_type') != 'labtech':
         return redirect('main_homepage')  # Redirect to the login page if not logged in as labtech
-    
+
     categories = InventoryItem.objects.values_list('category', flat=True).distinct()
     borrow_requests = Borrowing_Records.objects.filter(status="Pending")
     pending_count = borrow_requests.count()
@@ -1074,7 +1082,7 @@ def remove_equipment(request):
             return redirect('remove_equipment')
 
         if quantity_to_remove == equipment.quantity:
-            equipment.delete()  
+            equipment.delete()
         else:
             equipment.quantity -= quantity_to_remove
             equipment.save()
@@ -1083,7 +1091,7 @@ def remove_equipment(request):
             name=equipment.item,
             category=equipment.category,
             reason_for_removal=reason,
-            quantity=quantity_to_remove,  
+            quantity=quantity_to_remove,
             date_removed=date.today()  # Current date without time
         )
 
@@ -1101,10 +1109,10 @@ def remove_equipment(request):
 def borrowing_records(request):
     if 'user_id' not in request.session or request.session.get('user_type') != 'labtech':
         return redirect('main_homepage')  # Redirect to the login page if not logged in as labtech
-    
+
     borrow_requests = Borrowing_Records.objects.filter(status="Pending")
     pending_count = borrow_requests.count()
-    
+
     # Fetch all records
     all_records = Borrowing_Records.objects.all()
 
@@ -1195,7 +1203,7 @@ def generate_report(request):
 def account_register(request):
     if 'user_id' not in request.session or request.session.get('user_type') != 'labtech':
         return redirect('main_homepage')  # Redirect to the login page if not logged in as labtech
-    
+
     borrow_requests = Borrowing_Records.objects.filter(status="Pending")
     pending_count = borrow_requests.count()
 
@@ -1205,7 +1213,7 @@ def account_register(request):
         email = request.POST.get('email')
         position = request.POST.get('position')
         password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm-password') 
+        confirm_password = request.POST.get('confirm-password')
 
         password_regex = r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-+=]).{8,}$'
 
@@ -1216,7 +1224,7 @@ def account_register(request):
             if Staff_Faculty_Accounts.objects.filter(email=email).exists():
                 messages.error(request, "An account with this email already exists. Please use a different email.")
                 return render(request, 'TUPCLaboratoryEquipment/account-register.html', {'borrow_requests': borrow_requests})
-            
+
             if password != confirm_password:
                 messages.error(request, "Passwords do not match. Please try again.")
                 return render(request, 'TUPCLaboratoryEquipment/account-register.html', {'borrow_requests': borrow_requests})
@@ -1224,17 +1232,17 @@ def account_register(request):
             if not re.match(password_regex, password):
                 messages.error(request, "Password must be at least 8 characters long and include letters (a-z, A-Z), numbers (0-9), and symbols (!@#$%^&*()-+=).")
                 return render(request, 'TUPCLaboratoryEquipment/account-register.html', {'borrow_requests': borrow_requests})
-            
+
             account = Staff_Faculty_Accounts.objects.create(
                 first_name=first_name,
                 surname=surname,
                 email=email,
                 position=position,
-                password=password  
+                password=password
             )
 
             messages.success(request, "Account registered successfully.")
-            return render(request, 'TUPCLaboratoryEquipment/account-register.html') 
+            return render(request, 'TUPCLaboratoryEquipment/account-register.html')
 
     context = {
         'borrow_requests': borrow_requests,
@@ -1259,7 +1267,7 @@ def forgot_password(request):
         if user:
             # Generate a 6-digit OTP
             otp_code = random.randint(100000, 999999)
-            
+
             # Check if an OTP already exists for this email
             otp, created = OTP.objects.get_or_create(email=email)
             otp.otp = otp_code
@@ -1337,7 +1345,7 @@ def forgot_passwordotp(request):
 
             # OTP is valid, proceed to open the change password modal
             return JsonResponse({'status': 'success', 'message': 'OTP verified. Proceed to reset password.'}, status=200)
-        
+
         except OTP.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Invalid OTP. Please try again.'}, status=400)
 
@@ -1380,7 +1388,7 @@ def forgot_password_reset(request):
 def glassware_page(request):
     if 'user_id' not in request.session:
         return redirect('main_homepage')  # Redirect to the login page if not logged in
-    
+
     glassware_items = InventoryItem.objects.filter(category='glasswares')
 
     if request.method == 'POST':
@@ -1391,7 +1399,7 @@ def glassware_page(request):
             if 'user_id' in request.session and 'user_type' in request.session:
                 user_id = request.session['user_id']
                 user_type = request.session['user_type']
-                user_name = None  
+                user_name = None
 
                 if user_type == 'student':
                     try:
@@ -1410,7 +1418,7 @@ def glassware_page(request):
                 elif user_type in ['faculty', 'labstaff']:
                     try:
                         faculty = Staff_Faculty_Accounts.objects.get(id=user_id, position=user_type)
-                        user_name = f"{faculty.first_name} {faculty.surname} - {faculty.position}"  
+                        user_name = f"{faculty.first_name} {faculty.surname} - {faculty.position}"
                     except Staff_Faculty_Accounts.DoesNotExist:
                         messages.error(request, "Faculty or Lab Staff account not found.")
                         return redirect('main_homepage')
@@ -1444,7 +1452,7 @@ def glassware_page(request):
 def labtools_page(request):
     if 'user_id' not in request.session:
         return redirect('main_homepage')  # Redirect to the login page if not logged in
-    
+
     labtools_items = InventoryItem.objects.filter(category='labtools')
 
     if request.method == 'POST':
@@ -1455,7 +1463,7 @@ def labtools_page(request):
             if 'user_id' in request.session and 'user_type' in request.session:
                 user_id = request.session['user_id']
                 user_type = request.session['user_type']
-                user_name = None  
+                user_name = None
 
                 if user_type == 'student':
                     try:
@@ -1474,7 +1482,7 @@ def labtools_page(request):
                 elif user_type in ['faculty', 'labstaff']:
                     try:
                         faculty = Staff_Faculty_Accounts.objects.get(id=user_id, position=user_type)
-                        user_name = f"{faculty.first_name} {faculty.surname} - {faculty.position}"  
+                        user_name = f"{faculty.first_name} {faculty.surname} - {faculty.position}"
                     except Staff_Faculty_Accounts.DoesNotExist:
                         messages.error(request, "Faculty or Lab Staff account not found.")
                         return redirect('main_homepage')
@@ -1508,7 +1516,7 @@ def labtools_page(request):
 def heavyequipments_page(request):
     if 'user_id' not in request.session:
         return redirect('main_homepage')  # Redirect to the login page if not logged in
-    
+
     heavyequipments_items = InventoryItem.objects.filter(category='heavyequipments')
 
     if request.method == 'POST':
@@ -1519,7 +1527,7 @@ def heavyequipments_page(request):
             if 'user_id' in request.session and 'user_type' in request.session:
                 user_id = request.session['user_id']
                 user_type = request.session['user_type']
-                user_name = None  
+                user_name = None
 
                 if user_type == 'student':
                     try:
@@ -1538,7 +1546,7 @@ def heavyequipments_page(request):
                 elif user_type in ['faculty', 'labstaff']:
                     try:
                         faculty = Staff_Faculty_Accounts.objects.get(id=user_id, position=user_type)
-                        user_name = f"{faculty.first_name} {faculty.surname} - {faculty.position}"  
+                        user_name = f"{faculty.first_name} {faculty.surname} - {faculty.position}"
                     except Staff_Faculty_Accounts.DoesNotExist:
                         messages.error(request, "Faculty or Lab Staff account not found.")
                         return redirect('main_homepage')
@@ -1572,7 +1580,7 @@ def heavyequipments_page(request):
 def manage_account(request):
     if 'user_id' not in request.session or request.session.get('user_type') != 'labtech':
         return redirect('main_homepage')  # Redirect to the login page if not logged in as labtech
-    
+
     borrow_requests = Borrowing_Records.objects.filter(status="Pending")
     pending_count = borrow_requests.count()
     pending_approvals = StudentAccounts.objects.filter(status='Verified')
@@ -1608,7 +1616,7 @@ def manage_account(request):
                                     <td align="center" style="padding: 0;">
                                         <img src="https://drive.google.com/uc?id=1va5EOjzxjfSwYDaisC1xhTtDdAEzJWt2" alt="TUPC LAB EQUIPMENT BORROWING SYSTEM" style="width: auto; height: 60px; padding: 3px;">
                                     </td>
-                                </tr>   
+                                </tr>
                                     <!-- Title -->
                                     <tr>
                                         <td align="center" style="padding: 5px; font-size: 18px; font-weight: bold; color: #333;">
@@ -1706,7 +1714,7 @@ def manage_account(request):
                             </body>
                         </html>
                         """
-                        
+
                         msg.attach(MIMEText(body, 'html'))
 
                         # Setting up the SMTP server
@@ -1799,10 +1807,10 @@ def labstaff_homepage(request):
             for record in all_records:
                 # First, check if the status is 'Accepted' and if the date_returned has passed
                 # Inside the loop where you're checking if the status needs to be changed to 'Void'
-                if record.status == 'Accepted' and record.date_returned and record.date_returned < current_date:
+                if record.status == 'Accepted' and record.date_claim and record.date_claim < current_date:
                     # Change the status to 'Void' if the item has not been handed in
                     record.status = 'Void'
-                    
+
                     # Update the quantity in the inventory (similar to how it's done when returning)
                     item_name = record.items_borrowed  # Treat it as a single string
                     try:
@@ -1817,10 +1825,10 @@ def labstaff_homepage(request):
                         inventory_item.save()
                     except InventoryItem.DoesNotExist:
                         print(f"Item {item_name} not found in inventory.")
-                    
+
                     record.save()  # Save the record after updating the status
 
-                
+
                 # Then, check if the status is not already "Void" and the date_returned is passed
                 elif record.date_returned and record.date_returned < current_date:
                     # If the status isn't "Accepted", "Returned", or "Overdue", mark it as "Overdue"
@@ -1859,8 +1867,8 @@ def labstaff_homepage(request):
                                     <!-- Header Section with Radial Gradient Background -->
                                     <tr>
                                         <td align="center" style="padding: 0; background: radial-gradient(circle at top, rgb(107, 1, 1), rgba(46, 1, 1, 0.9)); border-radius: 8px 8px 0 0;">
-                                            <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc" 
-                                                alt="Header Image" 
+                                            <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc"
+                                                alt="Header Image"
                                                 style="width: auto; height: 80px; max-width: 100%; padding: 5px; display: block;">
                                         </td>
                                     </tr>
@@ -1945,8 +1953,8 @@ def labstaff_homepage(request):
                                 <!-- Header Section with Radial Gradient Background -->
                                 <tr>
                                     <td align="center" style="padding: 0; background: radial-gradient(circle at top, rgb(107, 1, 1), rgba(46, 1, 1, 0.9)); border-radius: 8px 8px 0 0;">
-                                        <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc" 
-                                            alt="Header Image" 
+                                        <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc"
+                                            alt="Header Image"
                                             style="width: auto; height: 80px; max-width: 100%; padding: 5px; display: block;">
                                     </td>
                                 </tr>
@@ -2031,8 +2039,8 @@ def labstaff_homepage(request):
                                 <!-- Header Section with Radial Gradient Background -->
                                 <tr>
                                     <td align="center" style="padding: 0; background: radial-gradient(circle at top, rgb(107, 1, 1), rgba(46, 1, 1, 0.9)); border-radius: 8px 8px 0 0;">
-                                        <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc" 
-                                            alt="Header Image" 
+                                        <img src="https://drive.google.com/uc?id=1yuZBz8h6EEbRowzqMiAAz4Ix3u6hL9zc"
+                                            alt="Header Image"
                                             style="width: auto; height: 80px; max-width: 100%; padding: 5px; display: block;">
                                     </td>
                                 </tr>
@@ -2099,7 +2107,7 @@ def labstaff_homepage(request):
 
             context = {
                 'records': all_records,
-                'position': position, 
+                'position': position,
                 'current_date': current_date,
             }
 
@@ -2113,31 +2121,31 @@ def labstaff_homepage(request):
 
 def blacklisted(request):
     if 'user_id' not in request.session or request.session.get('user_type') != 'labstaff':
-        return redirect('main_homepage')  
+        return redirect('main_homepage')
 
     user_id = request.session['user_id']
 
     try:
-        overdue_records = Borrowing_Records.objects.filter(status='Overdue')  
+        overdue_records = Borrowing_Records.objects.filter(status='Overdue')
         return render(request, 'TUPCLaboratoryEquipment/blacklisted.html', {
             'overdue_records': overdue_records
         })
     except Exception as e:
         messages.error(request, f"An error occurred while fetching overdue records: {e}")
-        return redirect('labstaff_homepage')  
+        return redirect('labstaff_homepage')
 
 def manage_programs(request):
     if 'user_id' not in request.session or request.session.get('user_type') != 'labtech':
         return redirect('main_homepage')  # Redirect to the login page if not logged in as labtech
-    
-    programs = Program.objects.all()  
+
+    programs = Program.objects.all()
     borrow_requests = Borrowing_Records.objects.filter(status="Pending")
     pending_count = borrow_requests.count()
 
     if request.method == 'POST':
         program_name = request.POST.get('program-name')
-        program_id = request.POST.get('program-id')  
-        delete_id = request.POST.get('delete-id')  
+        program_id = request.POST.get('program-id')
+        delete_id = request.POST.get('delete-id')
 
         if Program.objects.filter(program_name=program_name).exists():
             messages.error(request, "Program name already exists.")
@@ -2145,31 +2153,31 @@ def manage_programs(request):
                 'programs': programs,
                 'borrow_requests': borrow_requests
             })
-        
-        if delete_id:  
+
+        if delete_id:
             program = get_object_or_404(Program, id=delete_id)
             program.delete()
             return JsonResponse({'success': True})
 
         elif program_name:
-            if program_id:  
+            if program_id:
                 program = get_object_or_404(Program, id=program_id)
                 program.program_name = program_name
                 program.save()
                 return JsonResponse({'success': True, 'program_name': program_name})
-            else:  
+            else:
                 new_program = Program.objects.create(program_name=program_name)
-            
+
     return render(request, 'TUPCLaboratoryEquipment/manage_programs.html', {
         'programs': programs,
         'borrow_requests': borrow_requests,
-        'pending_count': pending_count, 
+        'pending_count': pending_count,
     })
 
 
 def logout_view(request):
     if 'user_id' in request.session:
-        print(f"Logging out user ID: {request.session['user_id']}")  
+        print(f"Logging out user ID: {request.session['user_id']}")
         del request.session['user_id']
     if 'first_name' in request.session:
         del request.session['first_name']
@@ -2178,6 +2186,6 @@ def logout_view(request):
     request.session.flush()  # This will clear all session data
 
     print("Session after logout:", request.session.keys())
-    
+
     # Redirect to main homepage after logout
     return redirect('main_homepage')
