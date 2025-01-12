@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'CSS/main-homepage.css' %}">
 
-    
+
 </head>
 <body>
     <div class="form-container">
@@ -27,11 +27,11 @@
             <div>
     <label for="password">PASSWORD</label>
     <div class="password-container">
-        <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="Enter your password" 
+        <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
             required
         >
         <i class="fas fa-eye password-toggle" id="togglePassword"></i>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="image-container">
-        <img src="{% static 'Media/equipments.png' %}" alt="Laboratory Equipment Image">
+        <img src="{% static 'media/equipments.png' %}" alt="Laboratory Equipment Image">
     </div>
 
 
@@ -107,27 +107,27 @@
                 {% csrf_token %}
                 <div class="password-wrapper">
                     <label for="newPassword">NEW PASSWORD</label>
-                    <input 
-                        type="password" 
-                        id="newPassword" 
-                        name="newPassword" 
-                        class="change-password-input" 
+                    <input
+                        type="password"
+                        id="newPassword"
+                        name="newPassword"
+                        class="change-password-input"
                         required
                     >
                 </div>
                 <div class="password-wrapper">
                     <label for="confirmPassword">CONFIRM PASSWORD</label>
-                    <input 
-                        type="password" 
-                        id="confirmPassword" 
-                        name="confirmPassword" 
-                        class="change-password-input" 
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        class="change-password-input"
                         required
                     >
                     <div class="password-showhide">
-                        <input 
-                            type="checkbox" 
-                            id="showPassword" 
+                        <input
+                            type="checkbox"
+                            id="showPassword"
                             onclick="togglePasswordCheckbox()"
                             class="password-checkbox"
                         >
@@ -241,7 +241,6 @@
         xhr.send("email=" + encodeURIComponent(email) + "&otp_code=" + encodeURIComponent(otp_code));
     }
 
-    // Submit Change Password form using AJAX
     function submitChangePasswordForm(event) {
         event.preventDefault(); // Prevent default form submission
 
@@ -253,6 +252,15 @@
         // Check if passwords match
         if (newPassword !== confirmPassword) {
             alert("Passwords do not match.");
+            return;
+        }
+
+        // Regular expression for password validation: at least 8 characters, with numbers, letters, and symbols
+        var passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+        // Check if the password matches the pattern
+        if (!passwordPattern.test(newPassword)) {
+            alert("Password must be at least 8 characters long and include at least one letter, one number, and one special character.");
             return;
         }
 
@@ -279,6 +287,7 @@
         };
         xhr.send("email=" + encodeURIComponent(email) + "&newPassword=" + encodeURIComponent(newPassword) + "&confirmPassword=" + encodeURIComponent(confirmPassword));
     }
+
 
     // JavaScript to toggle password visibility
     const togglePassword = document.getElementById("togglePassword");
