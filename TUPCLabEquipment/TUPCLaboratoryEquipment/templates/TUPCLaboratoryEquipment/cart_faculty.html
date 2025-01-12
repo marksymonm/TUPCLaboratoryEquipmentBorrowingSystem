@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty Tray</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'CSS/cart.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -30,7 +30,7 @@
             <tr>
                 <th>ITEMS</th>
                 <th>QUANTITY</th>
-                <th>ACTION</th> 
+                <th>ACTION</th>
             </tr>
         </thead>
         <tbody>
@@ -51,7 +51,7 @@
                             <input type="hidden" name="delete_item_id" value="{{ cart_item.id }}">
                             <button type="submit" name="delete_item" value="true" class="btn btn-danger btn-sm">REMOVE</button>
                         </form>
-                    </td> 
+                    </td>
                 </tr>
                 {% endfor %}
             {% else %}
@@ -59,7 +59,7 @@
                     <td colspan="3">Your cart is empty.</td>
                 </tr>
             {% endif %}
-        </tbody>        
+        </tbody>
     </table>
 
     <form method="POST" action="{% url 'cart_faculty' %}" onsubmit="disablePage()">
@@ -83,7 +83,7 @@
 
         </div>
     </form>
-    
+
     <script src="{% static 'JavaScript/cart.js' %}"></script>
 
 </body>
