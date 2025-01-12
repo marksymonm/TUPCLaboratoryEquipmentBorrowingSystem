@@ -44,7 +44,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="record_id" value="{{ record.id }}">
                                     <input type="hidden" name="action" value="hand_in">
-                                    <button type="submit" class="btn btn-primary btn-sm" id="hand-in-btn-{{ record.id }}" {% if record.date_claim != current_date %}disabled{% endif %}>Hand In</button>
+                                    <button type="submit" class="btn btn-primary btn-sm" id="hand-in-btn-{{ record.id }}">Hand In</button>
                                 </form>
                             {% elif record.status == 'Handed In' or record.status == 'Overdue' %}
                                 <form method="POST" onsubmit="disablePage()">
