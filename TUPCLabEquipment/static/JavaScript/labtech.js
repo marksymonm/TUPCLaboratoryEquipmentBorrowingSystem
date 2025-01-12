@@ -119,7 +119,7 @@ function filterTable() {
         const matchesSearch = equipmentName.includes(searchInput);
 
         row.style.display = (
-            (matchesSearch) && 
+            (matchesSearch) &&
             (selectedCategory === "" || category === selectedCategory)
         ) ? '' : 'none';
     });
@@ -180,3 +180,13 @@ function previewImage(event) {
     }
 
 let currentCategory = ""; // Track the current selected category
+
+function validateEquipmentName(input) {
+    const regex = /[a-zA-Z]/;  // Checks for at least one letter
+    if (!regex.test(input.value)) {
+        input.setCustomValidity("This field must not be empty.");
+    } else {
+        input.setCustomValidity(""); // Reset any previous error messages
+    }
+}
+
