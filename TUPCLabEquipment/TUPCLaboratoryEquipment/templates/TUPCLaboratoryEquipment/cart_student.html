@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Tray</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'CSS/cart.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -28,19 +28,19 @@
             <tr>
                 <th>ITEMS</th>
                 <th>QUANTITY</th>
-                <th>ACTION</th> 
+                <th>ACTION</th>
             </tr>
         </thead>
         <tbody>
             {% for cart_item in cart_items %}
             <tr>
-                <td>{{ cart_item.item }}</td> 
-                <td>{{ cart_item.quantity }}</td> 
+                <td>{{ cart_item.item }}</td>
+                <td>{{ cart_item.quantity }}</td>
                 <td>
                     <form method="POST" action="{% url 'cart_student' %}">
                         {% csrf_token %}
                         <input type="hidden" name="remove_item_id" value="{{ cart_item.id }}">
-                        <button type="submit" class="btn btn-danger btn-sm">REMOVE</button>  
+                        <button type="submit" class="btn btn-danger btn-sm">REMOVE</button>
                     </form>
                 </td>
             </tr>
