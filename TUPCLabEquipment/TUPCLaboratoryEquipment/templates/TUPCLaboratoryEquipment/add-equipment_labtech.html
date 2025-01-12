@@ -39,24 +39,27 @@ ADD EQUIPMENT
 
                 <div class="mb-3">
                     <label for="equipmentName" class="form-label">Equipment Name</label>
-                    <input type="text" name="item" id="equipmentName" class="form-control" placeholder="Enter equipment name" required oninput="this.value = this.value.toUpperCase().replace(/[0-9]/g, '');">
-                </div>                
+                    <input type="text" name="item" id="equipmentName" class="form-control" placeholder="Enter equipment name" required
+                           oninput="this.value = this.value.replace(/[^a-zA-Z ]/g, '').toUpperCase(); validateEquipmentName(this)">
+                </div>
 
                 <div class="mb-3">
-                    <label for="quantity" class="form-label">Quantity</label>
+                        <label for="quantity" class="form-label">
+                            Quantity <span style="opacity: 0.5; font-weight: lighter;">(Max 100pcs)</span>
+                        </label>
                     <input type="number" name="quantity" id="quantity" class="form-control" min="1" max="100" placeholder="Enter quantity" required oninput="if (this.value > 100) this.value = 100;">
                 </div>
-                
+
                 <button type="submit" class="btn btn-submit btn-block" style="background-color: #8B0000; color: white;">SAVE</button>
                 {% if messages %}
                 <div class="alert alert-success mt-3 mb-3">
                     <ul>
                         {% for message in messages %}
-                            <li class="{{ message.tags }}">{{ message }}</li>
+                            <p class="{{ message.tags }}">{{ message }}</p>
                         {% endfor %}
                     </ul>
                 </div>
-                {% endif %} 
+                {% endif %}
             </form>
         </div>
     </div>
